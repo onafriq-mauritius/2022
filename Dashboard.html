@@ -73,6 +73,8 @@
       flex-direction: column;
       justify-content: space-between;
       flex-grow: 1;
+      position: relative;
+      z-index: 1; /* Make sure container is under overlay */
     }
     #welcomeMessage {
       text-align: center;
@@ -129,33 +131,44 @@
       .cards { flex-direction: column; gap: 20px; }
       .card { margin: 0 10px; padding: 50px 20px; }
     }
-    #activationOverlay {
-      display: none;
+    #topUpOverlay {
+      display: none; /* hidden by default */
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 2000;
-      align-items: center;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 3000;
+      display: flex;
       justify-content: center;
+      align-items: center;
     }
-    #activationContent {
-      background: #fff;
+    #topUpContent {
+      background: white;
       padding: 30px 25px;
       border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      text-align: center;
       max-width: 400px;
       width: 90%;
-    }
-    .footer {
       text-align: center;
-      padding: 20px 10px;
-      color: #333;
-      font-size: 14px;
-      background-color: transparent;
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      flex-shrink: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #topUpContent h2 {
+      color: #6c2bd9;
+      margin-bottom: 20px;
+    }
+    #topUpContent p {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 25px;
+    }
+    #topUpContent button {
+      background: #6c2bd9;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -207,12 +220,12 @@
         <a href="#" style="font-size: 12px; color: #007bff; text-decoration: none;">Help</a>
       </div>
 
-<div style="display: flex; margin-bottom: 12px;">
-  <input type="text" value="https://onafriq-mauritius.github.io/2025" id="referralLink2" readonly style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 8px 0 0 8px; font-size: 12px;" />
-  <button onclick="copyLink2()" style="background: #00b368; color: white; padding: 8px 30px; border: none; border-radius: 0 8px 8px 0; font-size: 12px; cursor: pointer;">COPY</button>
-</div>
+      <div style="display: flex; margin-bottom: 12px;">
+        <input type="text" value="https://onafriq-mauritius.github.io/2025" id="referralLink2" readonly style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 8px 0 0 8px; font-size: 12px;" />
+        <button onclick="copyLink2()" style="background: #00b368; color: white; padding: 8px 30px; border: none; border-radius: 0 8px 8px 0; font-size: 12px; cursor: pointer;">COPY</button>
+      </div>
 
-<div id="copyMessage" style="font-size: 12px; color: red; margin-top: 8px;"></div>
+      <div id="copyMessage" style="font-size: 12px; color: red; margin-top: 8px;"></div>
       <div style="font-size: 12px; color: #444; margin-bottom: 12px; line-height: 1.4;">
         <p>✅ Invite friends & earn when they join.</p>
         <p style="color: #e1006b; font-weight: 600;">💰 Get 10% from their earnings.</p>
@@ -234,127 +247,137 @@
     </div>
   </div>
 
-  <div id="activationOverlay">
-    <div id="activationContent">
-      <h2 style="color: #6c2bd9; margin-bottom: 15px;">Activate Your Account</h2>
-      <p style="font-size: 16px; color: #444;">
-        Kwiyandikisha Byagenze Neza Usigaje Kwishyura <strong>3,700RWF</strong> Hanyuma Ugatangira Gukorana Natwe.
-      </p>
-      <div class="payment-info" style="background-color: #f0ebfa; border-left: 4px solid #6c2bd9; padding: 15px 20px; margin: 20px 0; border-radius: 10px; font-size: 15px; color: #333; text-align: left;">
-        <strong style="color: #6c2bd9; display: block; margin-bottom: 8px;">UBURYO BWO KWISHYURA</strong>
-        <p><strong>KANDA</strong></p><br>
-        <p>➡ *182*1*3*1*<strong>256781487793</strong>#</p>
-        <p>• AMOUNT <strong> 3,700</strong>RWF</p>
-        <p>• IMPAMVU UHITEMO <strong>2</strong> WEMEZE</p><br><br>
-        <hr style="border: none; height: 3px; background-color: blue; width: 100%;">
-        <p><strong>NURANGIZA KWISHYURA UROHEREZA SMS WISHYURIYEHO KURI WHATSAPP <a href="https://wa.me/250795401231" class="whatsapp-link" target="_blank">+250795401231</a>.</strong></p><br>
-        <p><strong>MUHAWE IKAZE 🎉</strong></p>
-          <a href="tel:*182*1*3*1*256781487793%23" style="text-decoration: none;">
-      </div>
-      <button id="confirmPaymentBtn" style="margin-top: 20px; background: #6c2bd9; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Pay Now </button>
+  <!-- Overlay for Top Up -->
+  <div id="topUpOverlay">
+    <div id="topUpContent">
+      <h2>Depositors Limit Reached</h2>
+      <p>The current deposit plan has reached its maximum number of depositors. To proceed with your withdrawal, please top up your deposit to activate a new slot. Thank you for your understanding.</p>
+      <button id="topUpBtn">Top Up Now</button>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+<!-- (Your existing HTML content remains unchanged up to the <script type="module"> tag) -->
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCbuLoyGu6v7dJUDQ0iM2DkvEZs0D9z2Do",
-      authDomain: "mfs-africa-ltd.firebaseapp.com",
-      databaseURL: "https://mfs-africa-ltd-default-rtdb.firebaseio.com",
-      projectId: "mfs-africa-ltd",
-      storageBucket: "mfs-africa-ltd.appspot.com",
-      messagingSenderId: "686833267635",
-      appId: "1:686833267635:web:c5a531346887f6452bd1c6"
-    };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyCbuLoyGu6v7dJUDQ0iM2DkvEZs0D9z2Do",
+    authDomain: "mfs-africa-ltd.firebaseapp.com",
+    databaseURL: "https://mfs-africa-ltd-default-rtdb.firebaseio.com",
+    projectId: "mfs-africa-ltd",
+    storageBucket: "mfs-africa-ltd.appspot.com",
+    messagingSenderId: "686833267635",
+    appId: "1:686833267635:web:c5a531346887f6452bd1c6"
+  };
 
-    const overlay = document.getElementById('activationOverlay');
-    const content = document.getElementById('activationContent');
-    const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const uid = user.uid;
-        const userRef = ref(db, `users/${uid}`);
-        onValue(userRef, (snapshot) => {
-          const data = snapshot.val();
-          if (!data?.active) {
-            overlay.style.display = 'flex';
-          } else {
-            overlay.style.display = 'none';
-          }
+  const overlay = document.getElementById('topUpOverlay');
+  const topUpBtn = document.getElementById('topUpBtn');
 
-          document.getElementById('bonus').textContent = `RWF ${data.bonus ?? 0}`;
-          document.getElementById('balance').textContent = `RWF ${data.balance ?? 0}`;
-          document.getElementById('deposit').textContent = `RWF ${data.deposit ?? 0}`;
-          document.getElementById('earn').textContent = `RWF ${data.totalEarn ?? 0}`;
-          document.getElementById('pending').textContent = `RWF ${data.pending ?? 0}`;
-          document.getElementById('welcomeMessage').textContent = `Welcome, ${data.username || "User"}!`;
-        });
-      } else {
-        window.location.href = "Login.html";
-      }
-    });
+  let currentUserId = null;
 
-    confirmPaymentBtn.addEventListener('click', () => {
-      content.innerHTML = "<h2 style='color:#6c2bd9;'>Activation Request Sent</h2><p>Please wait while we verify your payment.</p>";
-    });
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUserId = user.uid;
+      const userRef = ref(db, `users/${currentUserId}`);
+      onValue(userRef, (snapshot) => {
+        const data = snapshot.val();
 
-    document.getElementById('menuBtn').addEventListener('click', () => {
-      const dropdown = document.getElementById('dropdownMenu');
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    });
+        if (!data?.active) {
+          alert("Your account has been banned.");
+          signOut(auth).then(() => window.location.href = "Login.html");
+          return;
+        }
 
-    document.getElementById('logoutMenu').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await signOut(auth);
+        document.getElementById('bonus').textContent = `RWF ${data.bonus ?? 0}`;
+        document.getElementById('balance').textContent = `RWF ${data.balance ?? 0}`;
+        document.getElementById('deposit').textContent = `RWF ${data.deposit ?? 0}`;
+        document.getElementById('earn').textContent = `RWF ${data.totalEarn ?? 0}`;
+        document.getElementById('pending').textContent = `RWF ${data.pending ?? 0}`;
+        document.getElementById('welcomeMessage').textContent = `Welcome, ${data.username || "User"}!`;
+
+        const forceTopUp = data.forceTopUp === true;
+        if (data.deposit < 3 || forceTopUp) {
+          overlay.style.display = 'flex';
+          disableDashboardButtons(true);
+        } else {
+          overlay.style.display = 'none';
+          disableDashboardButtons(false);
+        }
+      });
+    } else {
       window.location.href = "Login.html";
-    });
+    }
+  });
 
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('dropdownMenu');
-      const btn = document.getElementById('menuBtn');
-      if (!menu.contains(e.target) && !btn.contains(e.target)) {
-        menu.style.display = 'none';
+  function disableDashboardButtons(disable) {
+    const ids = ['withdrawBtn', 'depositBtn', 'cashOutBtn', 'earnBtn'];
+    ids.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.disabled = disable;
+        btn.style.opacity = disable ? '0.5' : '1';
+        btn.style.pointerEvents = disable ? 'none' : 'auto';
+        btn.style.cursor = disable ? 'not-allowed' : 'pointer';
       }
     });
+  }
 
-    document.getElementById('withdrawBtn').addEventListener('click', () => {
-      window.location.href = "Withdraw.html";
-    });
+topUpBtn.addEventListener('click', () => {
+  window.location.href = "Deposit.html";
+});
 
-    document.getElementById('depositBtn').addEventListener('click', () => {
-      window.location.href = "Deposit.html";
-    });
-
-    document.getElementById('cashOutBtn').addEventListener('click', () => {
-      window.location.href = "Cashout.html";
-    });
-
-    document.getElementById('earnBtn').addEventListener('click', () => {
-      window.location.href = "Earn.html";
-    });
-
-   window.copyLink2 = function () {
-  const link = document.getElementById("referralLink2").value;
-  navigator.clipboard.writeText(link).then(() => {
-    const messageDiv = document.getElementById("copyMessage");
-    messageDiv.textContent = "Referral link copied!";
-    
-    // Hide it after 3 seconds
-    setTimeout(() => {
-      messageDiv.textContent = "";
-    }, 3000);
-  }).catch(err => {
-    console.error("Failed to copy: ", err);
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    const dropdown = document.getElementById('dropdownMenu');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
   });
-};
-  </script>
-</body>
-</html>
+
+  document.getElementById('logoutMenu').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    window.location.href = "Login.html";
+  });
+
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('dropdownMenu');
+    const btn = document.getElementById('menuBtn');
+    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.style.display = 'none';
+    }
+  });
+
+  document.getElementById('withdrawBtn').addEventListener('click', () => {
+    window.location.href = "Withdraw.html";
+  });
+
+  document.getElementById('depositBtn').addEventListener('click', () => {
+    window.location.href = "Deposit.html";
+  });
+
+  document.getElementById('cashOutBtn').addEventListener('click', () => {
+    window.location.href = "Cashout.html";
+  });
+
+  document.getElementById('earnBtn').addEventListener('click', () => {
+    window.location.href = "Earn.html";
+  });
+
+  window.copyLink2 = function () {
+    const link = document.getElementById("referralLink2").value;
+    navigator.clipboard.writeText(link).then(() => {
+      const messageDiv = document.getElementById("copyMessage");
+      messageDiv.textContent = "Referral link copied!";
+      setTimeout(() => {
+        messageDiv.textContent = "";
+      }, 3000);
+    }).catch(err => {
+      console.error("Failed to copy: ", err);
+    });
+  };
+</script>
